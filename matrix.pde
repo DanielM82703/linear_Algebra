@@ -1,28 +1,27 @@
 class Matrix {
 
 
-
+  //Matrix properties
   int rows;
   int columns;
   float[][] matrix;
 
 
-
-  Matrix(int rows, int columns) {
+  Matrix(int rows, int columns) {//Instantiates a new Matrix object if rows and columns are greater than 0
     if (rows > 0 && columns > 0) {
       this.rows = rows;
       this.columns = columns;
       this.matrix = new float[columns][rows];
     } else if (rows < 1) {
-      println("Matrix(int rows, int columns) DECLARATION ERR: rows must be greater than 0");
+      println("Matrix(int rows, int columns) INSTANTIATION ERR: rows must be greater than 0");
     } else if (columns < 1) {
-      println("Matrix(int rows, int columns) DECLARATION ERR: columns must be greater than 0");
+      println("Matrix(int rows, int columns) INSTANTIATION ERR: columns must be greater than 0");
     }
   }
 
 
-
-  void setM(float[][] arr) {
+  //Sets the matrix to a 2D float array if the dimensions are equal
+  void setArrM(float[][] arr) {
     if (this.rows == arr.length && this.columns == arr[0].length) {
       for (int i = 1; i < this.rows+1; i++) {
         for (int j = 1; j < this.columns+1; j++) {
@@ -36,8 +35,8 @@ class Matrix {
   }
 
 
-
-  float getValM(int row, int column) {//DOES NOT START AT INDEX ZERO FOR MATHEMATIC SIMPLICITY
+  //Returns the value of a specific index of the matrix (float) as long as the required row and column exist
+  float getValM(int row, int column) {
     float returnFloat = 0;
     if (row <= this.rows && column <= this.columns) {
       returnFloat = this.matrix[column-1][row-1];
@@ -56,8 +55,8 @@ class Matrix {
   }
 
 
-
-  void setIndexM(int row, int column, float value) {//DOES NOT START AT INDEX ZERO FOR MATHEMATIC SIMPLICITY
+  //Sets the value of a specific index of the matrix to the specified value as long as the required row and column exist
+  void setIndexM(int row, int column, float value) {
     if (row <= this.rows && column <= this.columns && row != 0 && column != 0) {
       this.matrix[column-1][row-1] = value;
     } else if (row ==0 || column == 0) {
@@ -77,7 +76,7 @@ class Matrix {
   }
 
 
-
+  //Just a basic funtion for visualizing the matrix in the console
   void printMatrixM() {
     println("MATRIX:");
     for (int i = 1; i < this.rows+1; i++) {
@@ -89,7 +88,7 @@ class Matrix {
   }
 
 
-
+  //Multiplies each value in the matrix by a constant c
   Matrix multM(float c) {
     Matrix returnMatrix = new Matrix(this.rows, this.columns);
     for (int i = 1; i < this.columns+1; i++) {
@@ -101,24 +100,58 @@ class Matrix {
   }
 
 
-
+  //Divides each value in the matrix by a constant c as long as it is not 0
   Matrix divM(float c) {
     Matrix returnMatrix = new Matrix(this.rows, this.columns);
-    for (int i = 1; i < this.columns+1; i++) {
-      for (int j = 1; j < this.rows+1; j++) {
-        returnMatrix.setIndexM(j, i, this.getValM(j, i) / c);
+    if (c != 0) {
+      for (int i = 1; i < this.columns+1; i++) {
+        for (int j = 1; j < this.rows+1; j++) {
+          returnMatrix.setIndexM(j, i, this.getValM(j, i) / c);
+        }
       }
+    } else {
+      println("Matrix divM(float c) ERR: Cannot divide by 0");
+      exit();
     }
     return returnMatrix;
   }
 
 
-  /*
-   float determinantM() {
-   }
-   */
+  //Returns the determinant of a matrix as a float. Only takes square matrices as arguments. Runs in O(n!) time so definitly need to revamp this later, maybe use decomposition
+  float determinantM() {
+    if (this.rows != this.columns) {
+      println("float determinantM() ERR: Cannot compute the determinant of a non-square matrix. " + str(this.rows) + "x" + str(this.columns) + " is not square");
+      exit();
+    }
+    //Laplace expansion
+    if (this.rows == 2 & this.columns == 2) {
+      return ((this.getValM(1, 1) * this.getValM(2, 2)) - (this.getValM(2, 1) * this.getValM(1, 2)));
+    }
+    float determinantSum = 0.0;
+    for (int i = 1; i < this.columns + 1; i++) {
+      Matrix newMatrix = new Matrix(this.rows - 1, this.columns - 1);
+      for (int j = 2; j < this.rows + 1; j++) {
+        for (int k = 1; k < this.columns + 1; k++) {
+          if (k != i) {
+            if (k < i) {
+              newMatrix.setIndexM(j - 1, k, this.getValM(j, k));
+            } else {
+              newMatrix.setIndexM(j - 1, k - 1, this.getValM(j, k));
+            }
+          }
+        }
+      }
+      if (i % 2 == 1) {
+        determinantSum += newMatrix.determinantM() * this.getValM(1, i);
+      } else {
+        determinantSum -= newMatrix.determinantM() * this.getValM(1, i);
+      }
+    }
+    return determinantSum;
+  }
 
 
+  //Returns the transpose of a matrix in a new Matrix object. Works for any valid Matrix object
   Matrix transposeM() {
     Matrix returnMatrix = new Matrix(this.columns, this.rows);
     for (int i = 1; i < this.rows + 1; i++) {
@@ -130,14 +163,72 @@ class Matrix {
   }
 
 
-  /*
-   Matrix inverseM() {
-   }
-   */
+  //Calculates the inverse of a matrix
+  Matrix inverseM() {
+    if (this.rows != this.columns) {
+      println("Matrix inverseM() ERR: Cannot invert non-square matrix. " + str(this.rows) + "x" + str(this.columns) + " is not square");
+      exit();
+    }
+
+    if (this.determinantM() == 0) {
+      println("Matrix inverseM() ERR: Cannot invert matrix with 0 determinant");
+      exit();
+    }
+    Matrix inverse = this.adjugateM();
+    return inverse.divM(this.determinantM());
+  }
+
+
+  //Returns the matrix of minors in a new Matrix
+  Matrix minorM () {
+    Matrix minorMatrix = new Matrix(this.rows, this.columns);
+    for (int i = 1; i < this.rows + 1; i++) {
+      for (int j = 1; j < this.columns + 1; j++) {
+        Matrix tempMatrix = new Matrix(minorMatrix.rows - 1, minorMatrix.columns - 1);
+        for (int y = 1; y < this.rows + 1; y++) {
+          for (int x = 1; x < this.columns + 1; x++) {
+            if (y != i || x != j) {
+              if (y < i && x < j) {
+                tempMatrix.setIndexM(y, x, this.getValM(y, x));
+              } else if (y < i && x > j) {
+                tempMatrix.setIndexM(y, x - 1, this.getValM(y, x));
+              } else if (y > i && x < j) {
+                tempMatrix.setIndexM(y - 1, x, this.getValM(y, x));
+              } else if (y > i && x > j) {
+                tempMatrix.setIndexM(y - 1, x - 1, this.getValM(y, x));
+              }
+            }
+          }
+        }
+        minorMatrix.setIndexM(i, j, tempMatrix.determinantM());
+      }
+    }
+    return minorMatrix;
+  }
+
+
+  //Calculates the cofactors of a matrix (switches some signs) for computation of the adjugate
+  Matrix cofactorM() {
+    Matrix cofactorMatrix = this.minorM();
+    for (int i = 1; i < this.rows + 1; i++) {
+      for (int j = 1; j < this.columns + 1; j++) {
+        if ((i + j) % 2 == 1) {
+          cofactorMatrix.setIndexM(i, j, -1 * cofactorMatrix.getValM(i, j));
+        }
+      }
+    }
+    return cofactorMatrix;
+  }
+
+
+  Matrix adjugateM() {
+    Matrix adjugate = this.cofactorM();
+    return adjugate.transposeM();
+  }
 }
 
 
-
+//Adds two matrices together as long as they have the same dimensions. Returns in a new matrix
 Matrix addM(Matrix firstMatrix, Matrix secondMatrix) {
   Matrix returnMatrix = new Matrix(firstMatrix.rows, secondMatrix.columns);
   if (firstMatrix.rows == secondMatrix.rows && firstMatrix.columns == secondMatrix.columns) {
@@ -161,7 +252,7 @@ Matrix addM(Matrix firstMatrix, Matrix secondMatrix) {
 }
 
 
-
+//Subtracts two matrices together as long as they have the same dimensions. Returns in a new matrix
 Matrix subM(Matrix firstMatrix, Matrix secondMatrix) {
   Matrix returnMatrix = new Matrix(firstMatrix.rows, secondMatrix.columns);
   if (firstMatrix.rows == secondMatrix.rows && firstMatrix.columns == secondMatrix.columns) {
@@ -183,3 +274,10 @@ Matrix subM(Matrix firstMatrix, Matrix secondMatrix) {
   }
   return returnMatrix;
 }
+
+
+/*
+Matrix matMultM(){
+ 
+ }
+ */
