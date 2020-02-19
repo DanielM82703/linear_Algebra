@@ -1,5 +1,5 @@
 # linear_Algebra
-Linear algebra operations in Processing
+Linear algebra functions in Processing
 
 Vector functions:
 
