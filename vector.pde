@@ -1,13 +1,22 @@
 class Vector {
 
+  
+  
   float[] vector;
   int dimension;
 
+
   //Vector initializer
   Vector(int dim) {
-    this.vector = new float[dim];
-    this.dimension = dim;
+    if (dim > 0) {
+      this.vector = new float[dim];
+      this.dimension = dim;
+    } else {
+      println("Vector(int dim) INSTANTIATION ERR: Cannot have vectors of dimension 0");
+      exit();
+    }
   }
+
 
   //Sets the vector to a 1D array
   void setArrV(float[] newVector) {
@@ -21,6 +30,7 @@ class Vector {
     }
   }
 
+
   //Sets the specific index of a vector to the value
   void setIndexV(int index, float value) {
     if (index < dimension + 1) {
@@ -31,10 +41,18 @@ class Vector {
     }
   }
 
+
   //Gets the float value of the vector at an index
   float getValV(int index) {
-    return this.vector[index - 1];
+    if (index < this.dimension + 1) {
+      return this.vector[index - 1];
+    } else {
+      println("float getValV(int index) ERR: Dimension of this vector is " + str(this.dimension) + ". " + str(index) + " is an invalid index");
+      exit();
+    }
+    return 0.0; //Placeholder
   }
+
 
   //Returns the magnitude of the vector
   float magV() {
@@ -45,6 +63,7 @@ class Vector {
     return sqrt(sum);
   }
 
+
   //Returns the square of the magnitude
   float magSqV() {
     float sum = 0;
@@ -53,6 +72,7 @@ class Vector {
     }
     return sum;
   }
+
 
   //Adds two vectors and returns it as a new vector
   Vector addV(Vector b) {
@@ -68,6 +88,7 @@ class Vector {
     return sum;
   }
 
+
   //Subtracts two vectors and returns them as a new vector
   Vector subV(Vector b) {
     Vector sum = new Vector(this.dimension);
@@ -82,6 +103,7 @@ class Vector {
     return sum;
   }
 
+
   //Multiplies a vector by a constant
   Vector multV(float n) {
     Vector newVector = new Vector(this.dimension);
@@ -90,6 +112,7 @@ class Vector {
     }
     return newVector;
   }
+
 
   //Divides a vector by a non-zero constant
   Vector divV(float n) {
@@ -105,11 +128,13 @@ class Vector {
     return newVector;
   }
 
+
   //Sets the magnitude of the vector to a constant
   void setMagV (float c) {
     normalizeV();
     this.setArrV((this.multV(c)).toArray());
   }
+
 
   //Normalizes a non-zero vector
   void normalizeV() {
@@ -120,6 +145,7 @@ class Vector {
       exit();
     }
   }
+
 
   //Rotates a 2D vector by an angle
   void rotateV(float theta) {
@@ -132,23 +158,30 @@ class Vector {
     }
   }
 
+
   //Returns the vector as a float array
   float[] toArray() {
     return this.vector;
   }
 
+
+  //Prints vector
   void printVectorV() {
     println("VECTOR:");
     println(this.vector);
   }
+  
+  
+  
 }
+
 
 //Returns the dot product of compatible vectors
 float dotProductV(Vector a, Vector b) {
   float dot = 0;
   if (a.dimension == b.dimension) {
     for (int i = 1; i < a.dimension + 1; i++) {
-      dot += a.getValV(1) * b.getValV(i);
+      dot += a.getValV(i) * b.getValV(i);
     }
   } else {
     println("float dotProductV(Vector a, Vector b) ERR: dimension of Vector a: " + str(a.dimension) + " does not match dimension of Vector b: " + str(b.dimension));
@@ -157,10 +190,12 @@ float dotProductV(Vector a, Vector b) {
   return dot;
 }
 
+
 //Returns the angle between two vectors
 float angleBetweenV(Vector a, Vector b) {
   return acos(dotProductV(a, b) / (a.magV() * b.magV()));
 }
+
 
 //Returns the cross product of two vectors
 Vector crossProductV(Vector a, Vector b) {

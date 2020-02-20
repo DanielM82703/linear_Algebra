@@ -6,6 +6,8 @@ class Matrix {
   int columns;
   float[][] matrix;
 
+
+
   Matrix(int rows, int columns) {//Instantiates a new Matrix object if rows and columns are greater than 0
     if (rows > 0 && columns > 0) {
       this.rows = rows;
@@ -56,6 +58,7 @@ class Matrix {
     return returnFloat;
   }
 
+
   //Sets the value of a specific index of the matrix to the specified value as long as the required row and column exist
   void setIndexM(int row, int column, float value) {
     if (row <= this.rows && column <= this.columns && row != 0 && column != 0) {
@@ -88,6 +91,7 @@ class Matrix {
     }
   }
 
+
   //Multiplies each value in the matrix by a constant c
   Matrix multM(float c) {
     Matrix returnMatrix = new Matrix(this.rows, this.columns);
@@ -98,6 +102,7 @@ class Matrix {
     }
     return returnMatrix;
   }
+
 
   //Divides each value in the matrix by a constant c as long as it is not 0
   Matrix divM(float c) {
@@ -114,6 +119,7 @@ class Matrix {
     }
     return returnMatrix;
   }
+
 
   //Returns the determinant of a matrix as a float. Only takes square matrices as arguments. Runs in O(n!) time so definitly need to revamp this later, maybe use decomposition
   float determinantM() {
@@ -148,6 +154,7 @@ class Matrix {
     return determinantSum;
   }
 
+
   //Returns the transpose of a matrix in a new Matrix object. Works for any valid Matrix object
   Matrix transposeM() {
     Matrix returnMatrix = new Matrix(this.columns, this.rows);
@@ -158,6 +165,7 @@ class Matrix {
     }
     return returnMatrix;
   }
+
 
   //Calculates the inverse of a matrix
   Matrix inverseM() {
@@ -217,15 +225,18 @@ class Matrix {
   }
 
 
+  //Adjugate matrix
   Matrix adjugateM() {
     Matrix adjugate = this.cofactorM();
     return adjugate.transposeM();
   }
+  
+  
+  
 }
 
 
 //Adds two matrices together as long as they have the same dimensions. Returns in a new matrix
-
 Matrix addM(Matrix firstMatrix, Matrix secondMatrix) {
   Matrix returnMatrix = new Matrix(firstMatrix.rows, secondMatrix.columns);
   if (firstMatrix.rows == secondMatrix.rows && firstMatrix.columns == secondMatrix.columns) {
@@ -247,6 +258,7 @@ Matrix addM(Matrix firstMatrix, Matrix secondMatrix) {
   }
   return returnMatrix;
 }
+
 
 //Subtracts two matrices together as long as they have the same dimensions. Returns in a new matrix
 Matrix subM(Matrix firstMatrix, Matrix secondMatrix) {
